@@ -585,9 +585,9 @@ void printAllStudents(vector<Student> studentData)
     for (unsigned int i = 0; i < studentData.size(); i++)//modified: change i <= to i <
     {
         cout << " " << left << setw(40) << studentData[i].name << setw(18) << studentData[i].USF_ID << setw(40) << studentData[i].email << setw(22) <<
-            ((studentData[i].presGrade == -1) ? '-' : studentData[i].presGrade) << setw(22) <<//modified: delete + 48
-            ((studentData[i].essayGrade == -1) ? '-' : studentData[i].essayGrade) << setw(22) <<//modified: delete + 48
-            ((studentData[i].projectGrade == -1) ? '-' : studentData[i].projectGrade) << endl;//modified: delete + 48
+            (char)((studentData[i].presGrade == -1) ? '-' : studentData[i].presGrade+48) << setw(22) <<//modified: added cast to char
+            (char)((studentData[i].essayGrade == -1) ? '-' : studentData[i].essayGrade+48) << setw(22) <<//modified: added cast to char
+            (char)((studentData[i].projectGrade == -1) ? '-' : studentData[i].projectGrade+48) << endl;//modified: added cast to char
     }
     cout << endl;
 }
@@ -607,8 +607,8 @@ void printOneStudent(int index, vector<Student> studentVector)
     cout << left << setw(28) << "|Name: " << studentVector[index].name << endl;
     cout << setw(28) << "|USF ID:" << studentVector[index].USF_ID << endl;
     cout << setw(28) << "|Email:" << studentVector[index].email << endl;
-    cout << setw(28) << "|Presentation Grade:" << ((studentVector[index].presGrade == -1) ? '-' : studentVector[index].presGrade) << endl;//modified: delete +48
-    cout << setw(28) << "|Essay Grade:" << ((studentVector[index].essayGrade == -1) ? '-' : studentVector[index].essayGrade) << endl;
-    cout << setw(28) << "|Project Grade:" << ((studentVector[index].projectGrade == -1) ? '-' : studentVector[index].projectGrade) << endl;
+    cout << setw(28) << "|Presentation Grade:" << (char)((studentVector[index].presGrade == -1) ? '-' : studentVector[index].presGrade+48) << endl;//modified: added cast to char
+    cout << setw(28) << "|Essay Grade:" << (char)((studentVector[index].essayGrade == -1) ? '-' : studentVector[index].essayGrade+48) << endl;//modified: added cast to char
+    cout << setw(28) << "|Project Grade:" << (char)((studentVector[index].projectGrade == -1) ? '-' : studentVector[index].projectGrade+48) << endl;//modified: added cast to char
     cout << "---------------------------------------------------\n\n";
 }
