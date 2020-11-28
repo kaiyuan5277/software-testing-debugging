@@ -1,3 +1,7 @@
+/**************************************************************************************************************************
+    Purpose: A simple student data manager that the Software Testing class can use to keep a record of student performance
+             throughout the course. See documentation for additionally requirement to use this system.
+****************************************************************************************************************************/
 #include <stdio.h>
 #include <vector>
 #include <cstring>
