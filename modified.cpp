@@ -1,11 +1,7 @@
-/**************************************************************************************************************************
-    Purpose: A simple student data manager that the Software Testing class can use to keep a record of student performance
-             throughout the course. See documentation for additionally requirement to use this system.
-****************************************************************************************************************************/
 #include <stdio.h>
 #include <vector>
 #include <cstring>
-//#include <string.h>//modified: delete
+//#include <string>//modified: delete
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
@@ -45,7 +41,7 @@ bool fileGradeCheck(string dataInfo, int &gradeUpdate);
 int inputGradeCheck(string type);
 int case_insensitive(string s1, string s2);
 string stringInputCheck(string phrase, unsigned int size);
-vector<Student> readDataFile(string filename, bool opened);
+vector<Student> readDataFile(string filename, bool &opened); //modified: pass a reference bool
 void writeToFile(string filename, vector<Student> studentData);
 void updateAGradeType(string type, vector<Student> &studentVector);
 bool deleteStudent(int index, vector<Student> &studentVector);
@@ -63,7 +59,7 @@ int main()//modified: change Main to main
     //dataFile, option;
     string dataFile, option;//modified
     //fileOpened;
-    bool fileOpened = true;//modified: initial variable
+    bool fileOpened;//modified: initial variable
 
     cout << "\nPlease enter the data file name: ";
     cin >> filename;
@@ -278,7 +274,7 @@ string stringInputCheck(string phrase, unsigned int size)
  * Function that read from the file that contains all students' data information and it returns a vector of Student struct
  **************************************************************************/
  //void readDataFile(string filename, bool opened)
-vector<Student> readDataFile(string filename, bool opened)//modified
+vector<Student> readDataFile(string filename, bool &opened)//modified
 {
     ifstream dataFile(filename);    //open data file
     string line, data;
@@ -291,6 +287,7 @@ vector<Student> readDataFile(string filename, bool opened)//modified
         opened = false;//modified
         return studentInfo;
     }
+    else opened = true; //modified: if it opened the file, opened is set to true
     cout << "\nStart reading the student data file " << filename << ".\n";
 
     if (dataFile.good())//modified change dataFile.good to dataFile.good()
@@ -360,7 +357,7 @@ void writeToFile(string filename, vector<Student> studentData)
         //write all student data to the file
         dataFile << "name,UID,email,presentation,essay,project\n";
         
-        for (int i = 0; i < studentData.size(); i++)//modified: delete symbol ;
+        for ( i = 0; i < studentData.size(); i++)//modified: delete symbol ;
         {
             dataFile << studentData[i].name << "," << studentData[i].USF_ID << "," << studentData[i].email << ",";
             studentData[i].presGrade == -1 ? (dataFile << ",") : (dataFile << studentData[i].presGrade << ",");
@@ -537,7 +534,7 @@ int chosenNameIndex(vector<int> studentIndexList, vector<Student> studentData)
         {
             cout << "\nEnter the index number to view student info in details: ";
             cin >> index;
-            if (index.length() != 1 || stoi(index) < 1 || stoi(index) > studentIndexList.size())
+            if (index.length() != 1 || stoi(index) < 1 || stoi(index) > int(studentIndexList.size()))//modified: cast studentIndexList.size to int
                 cout << "ERROR: Invalid input.\n";
             else return studentIndexList.at(stoi(index) - 1);
         }
