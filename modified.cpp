@@ -206,9 +206,13 @@ bool fileGradeCheck(string dataInfo, int &gradeUpdate)//add & pass by reference
     if (dataInfo.length() == 0)    //if no data, then store -1 as the not graded yet
         gradeUpdate = -1;
     else if (dataInfo.length() == 1)  //check for grade range
-    {
-        gradeUpdate = stoi(dataInfo);
-        if (gradeUpdate < -1 || gradeUpdate>4) return true;
+    {        
+        char digit = dataInfo[0];
+        if(isdigit(digit)){
+            gradeUpdate = stoi(dataInfo);
+            if (gradeUpdate < -1 || gradeUpdate>4) return true;
+        }
+        else if (digit != '\r') return true;        
     }
     else if (dataInfo.length() > 1)    //invalid data due to string size is more than 1
         return true;
@@ -327,6 +331,7 @@ vector<Student> readDataFile(string filename, bool &opened)//modified
             skipTemp = fileGradeCheck(data, dataEssayGrade);
             if (skipTemp) skip = true;
             getline(ss, data, ',');
+            if(data.size() > 1) data = data.substr(0, data.size()-1); // This is to fix a weird bug in linux where the last character in the last line is '\r'
             skipTemp = fileGradeCheck(data, dataProjectGrade);
             if (skipTemp) skip = true;
 
