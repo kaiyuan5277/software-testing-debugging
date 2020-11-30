@@ -81,7 +81,7 @@ int main()//modified: change Main to main
             cout << "\n\n**************** CEN4072  Class-Roll Maintenance ****************\n";
             cout << "\t1. Display all students info\n";
             cout << "\t2. Search/update/delete student by name [first last]\n";
-            cout << "\t3. Search/update/delete student by USF ID [U-123455678]\n";
+            cout << "\t3. Search/update/delete student by USF ID [U-12345678]\n";
             cout << "\t4. Search/update/delete student by email\n";
             cout << "\t5. Add a student\n";
             cout << "\t6. Update all presentation grades\n";

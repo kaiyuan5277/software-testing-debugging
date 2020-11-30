@@ -674,10 +674,43 @@ void generateStudents(int numOfStudents, vector<Student> &studentData, string fi
     dataFile.close();
 }
 
+bool makeStudentsFile(vector<Student> studentData, string filename)
+{
+    string name, ID, email;
+    int presGrade, projGrade, essayGrade;
+
+    ofstream dataFile(filename);
+    if (!dataFile.is_open()){
+        cout << "\nCould not open " << filename << ".\n";
+        return false;
+    }
+    dataFile << "name,UID,email,presentation,essay,project\n";
+
+    if (dataFile.good()) {
+        for(int i = 0; i < studentData.size(); i++)
+        {
+            name = studentData[i].name;
+            ID = studentData[i].USF_ID;
+            email = studentData[i].email;
+            presGrade = studentData[i].presGrade;
+            projGrade = studentData[i].projectGrade;
+            essayGrade = studentData[i].essayGrade;
+            
+            dataFile << name << "," << ID << "," << email << ",";
+            presGrade == -1 ? (dataFile << ",") : (dataFile << presGrade << ",");
+            projGrade == -1 ? (dataFile << ",") : (dataFile << projGrade << ",");
+            essayGrade == -1 ? (dataFile << "," << endl) : (dataFile << essayGrade << endl);
+        }
+    }
+    else return false;
+    dataFile.close();
+    return true;
+}
+
 /*************************************************************************
 * BASIC VECTOR TEST
 **************************************************************************/
-TEST_CASE("vector of students can be added to and removed from", "[readDataFile]"){
+TEST_CASE("vector of students can be added to, read from, and removed from", "[readDataFile]"){
     vector<Student> studentData;
     char name[41] = "Banner", ID[11] = "U-00000000", email[30] = "strongestAvenger@usf.edu";
 
@@ -698,7 +731,8 @@ TEST_CASE("vector of students can be added to and removed from", "[readDataFile]
 }
 
 /*************************************************************************
-* CASE INSENSITIVE TEST
+* Testing int case_insensitive(string s1, string s2); 
+* case_insenitive checks if the strings match in lowercase.
 **************************************************************************/
 SCENARIO("strings are compared case insensitive", "[case_insensitive]"){
     GIVEN("A string with uppercase, an identical string with lowercase, and a similar string with lowercase"){
@@ -771,14 +805,24 @@ SCENARIO("Valid grades are 0-4 or nothing", "[fileGradeCheck]"){
  * Testing vector<Student> readDataFile(string filename, bool &opened);
  * Function that read from the file that contains all students' data information and it returns a vector of Student struct
  **************************************************************************/
-SCENARIO("A random test file is read", "[readDataFile]"){
+SCENARIO("A test file is read", "[readDataFile]"){
     GIVEN("A test file"){
-        string fileName = "students_test.csv";
+        string fileName = "student_test.csv";
         vector<Student> studentData;
         vector<Student> functionData;
-        WHEN("is empty"){
+        WHEN("has four students that shouldn't be skipped"){
             bool opened;
-            generateStudents(0, studentData, fileName);
+            string fileBasic = "student_basic.csv";
+            THEN("the returned student vector is empty"){
+                CHECK(readDataFile(fileBasic, opened).size() == 4);
+            }
+            THEN("the file was opened"){
+                CHECK(opened == true);
+            }
+        }
+        WHEN("has only the header"){
+            bool opened;
+            REQUIRE(makeStudentsFile(studentData, fileName));
             THEN("the returned student vector is empty"){
                 CHECK(readDataFile(fileName, opened).size() == 0);
             }
@@ -786,28 +830,39 @@ SCENARIO("A random test file is read", "[readDataFile]"){
                 CHECK(opened == true);
             }
         }
-        WHEN("has 100 random students"){
+        WHEN("has one valid student"){
             bool opened;
-            generateStudents(100, studentData, fileName);
+            char name[41] = "Banner", ID[11] = "U-00000000", email[30] = "strongestAvenger@usf.edu";
+            Student s(name, ID, email, 4, 4, 4);
+            studentData.push_back(s);
+            REQUIRE(makeStudentsFile(studentData, fileName));
             functionData = readDataFile(fileName, opened);
             THEN("the file was opened"){
                 REQUIRE(opened == true);
             }
-            THEN("the returned student vector has 100 students"){
-                REQUIRE(functionData.size() == 100);
+            THEN("the returned student vector has as many students as given"){
+                REQUIRE(functionData.size() == studentData.size());
             }
             THEN("the students in the vector match what was in the file"){
-                for(int i = 0; i < functionData.size()+1; i++){
-                    CHECK(strcmp(functionData[i].name, studentData[i].name) == 0);
-                    CHECK(strcmp(functionData[i].USF_ID, studentData[i].USF_ID) == 0);
-                    CHECK(strcmp(functionData[i].email, studentData[i].email) == 0);
-                    CHECK(functionData[i].presGrade == studentData[i].presGrade);
-                    CHECK(functionData[i].projectGrade == studentData[i].projectGrade);
-                    CHECK(functionData[i].essayGrade == studentData[i].essayGrade);
-                }
+                CHECK(strcmp(functionData[0].name, studentData[0].name) == 0);
+                CHECK(strcmp(functionData[0].USF_ID, studentData[0].USF_ID) == 0);
+                CHECK(strcmp(functionData[0].email, studentData[0].email) == 0);
+                CHECK(functionData[0].presGrade == studentData[0].presGrade);
+                CHECK(functionData[0].projectGrade == studentData[0].projectGrade);
+                CHECK(functionData[0].essayGrade == studentData[0].essayGrade);
             }
         }
-        // Add a test case where the input is intentionally bad in some lines   
+        WHEN("has one valid student and a student with a name that is one character too long"){
+            bool opened;
+            string fileLongName = "student_long_name_test.csv";
+            functionData = readDataFile(fileLongName, opened);
+            THEN("the file was opened"){
+                REQUIRE(opened == true);
+            }
+            THEN("the returned student vector has only 1 student"){
+                REQUIRE(functionData.size() == 1);
+            }
+        } 
         WHEN("doesn't exist"){
             bool opened;
             fileName = "1.csv";
@@ -818,7 +873,6 @@ SCENARIO("A random test file is read", "[readDataFile]"){
                 CHECK(opened == false);
             }
         }
-        
     }
 }
 
@@ -832,7 +886,7 @@ SCENARIO("A random test file is read", "[readDataFile]"){
  * Testing void printOneStudent(int index, vector<Student> studentVector)
  * Function that prints a specific students information
  ***************************************************************************/
-// Check that it doesn't fail when given a bad index
+// Check that it doesn't fail when given -1 (which means that the student doesn't exist)
 // - - - doesn't fail on a good index
 // - - - prints properly (probably have to cout what it should look like and let user compare)
 // - - - doesn't fail on an empty studentVector
