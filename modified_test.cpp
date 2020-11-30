@@ -881,20 +881,102 @@ SCENARIO("A test file is read", "[readDataFile]"){
  * Function that writes the update data to the file
  ***************************************************************************/
 // Give it some data that you've written to a file. Open the file it writes to and compare each line with the file you made.
-
+SCENARIO("A vector of students is wrritten into a file", "[writeToFile]"){
+    GIVEN("A test file"){
+        string fileName = "one_student.csv";
+        vector<Student> studentData;
+        vector<Student> functionData;
+        char name[41] = "Banner", ID[11] = "U-00000000", email[30] = "strongestAvenger@usf.edu";
+        studentData.push_back(Student(name, ID, email, 3, 4, 3));
+        WHEN("one_student.csv"){
+            bool opened;
+            writeToFile(fileName, studentData);
+            studentData.clear();
+            THEN("check if it prints out everything"){
+                functionData = readDataFile(fileName, opened);
+                CHECK(readDataFile(fileName, opened).size() == 1);
+                CHECK(strcmp(studentData[0].name, name) == 0);
+                CHECK(strcmp(studentData[0].USF_ID, ID) == 0);
+                CHECK(strcmp(studentData[0].email, email) == 0);
+                CHECK(functionData[0].presGrade == 3);
+                CHECK(functionData[0].essayGrade == 4);
+                CHECK(functionData[0].projectGrade == 3);
+            }
+        }
+    }
+}
 /**************************************************************************
  * Testing void printOneStudent(int index, vector<Student> studentVector)
  * Function that prints a specific students information
  ***************************************************************************/
-// Check that it doesn't fail when given -1 (which means that the student doesn't exist)
+SCENARIO("A specific student's information is printed out", "[printOneStudent]"){
+  GIVEN("A vector of students"){
+      vector<Student> studentData;
+      char name[41] = "Banner", ID[11] = "U-00000000", email[30] = "strongestAvenger@usf.edu";
+      studentData.push_back(Student(name, ID, email, 3, 4, 3));
+      char name1[41] = "Jack", ID1[11] = "U-11111111", email1[30] = "jack@usf.edu";
+      studentData.push_back(Student(name1, ID1, email1, 3, 4, 3));
+      // Check that it doesn't fail when given -1 (which means that the student doesn't exist)
+      WHEN("student doesn't exist"){
+          printOneStudent(-1, studentData);
+      }
+  
 // - - - doesn't fail on a good index
+      WHEN("student does exist"){
+          printOneStudent(1, studentData);
+      }
 // - - - prints properly (probably have to cout what it should look like and let user compare)
-// - - - doesn't fail on an empty studentVector
+      WHEN("student does exist and prints student info"){
+          cout << "\n\n\n------------------ COMPARE THE TWO TABLES BELOW, SHOULD BE THE SAME -------------------\n" << endl;
+          printOneStudent(1, studentData);
+              //Print student based on the index
+          cout << "\n------------------ STUDENT INFO -------------------" << endl;
+          cout << left << setw(28) << "|Name: " << studentData[1].name << endl;
+          cout << setw(28) << "|USF ID:" << studentData[1].USF_ID << endl;
+          cout << setw(28) << "|Email:" << studentData[1].email << endl;
+          cout << setw(28) << "|Presentation Grade:" << (char)((studentData[1].presGrade == -1) ? '-' : studentData[1].presGrade+48) << endl;//modified: added cast to char
+          cout << setw(28) << "|Essay Grade:" << (char)((studentData[1].essayGrade == -1) ? '-' : studentData[1].essayGrade+48) << endl;//modified: added cast to char
+          cout << setw(28) << "|Project Grade:" << (char)((studentData[1].projectGrade == -1) ? '-' : studentData[1].projectGrade+48) << endl;//modified: added cast to char
+          cout << "---------------------------------------------------\n\n";
+          cout << "---------------------------------------------------------------------------------------------\n\n";
+      }
+  }
+}
 
 /**************************************************************************
  * Testing void printAllStudents(vector<Student> studentData)
  * Function that prints all the students in the class
  ***************************************************************************/
-// Check that it doesn't fail when given an empty vector of students
+ SCENARIO("All students' information is printed out", "[printAllStudents]"){
+   GIVEN("A vector of students"){
+       vector<Student> studentData;
+
+      //add students to vector 
+      char name[41] = "Banner", ID[11] = "U-00000000", email[30] = "strongestAvenger@usf.edu";
+      studentData.push_back(Student(name, ID, email, 3, 4, 3));
+      char name1[41] = "Jack", ID1[11] = "U-11111111", email1[30] = "jack@usf.edu";
+      studentData.push_back(Student(name1, ID1, email1, 4, 4, 3));
 // - - - - - - - a good vector of students
+      WHEN("vector of students is not empty"){
+          printAllStudents(studentData);
+      }
 // - - - prints properly (probably have to cout what it should look like and let user compare)
+      WHEN("vector of students is not empty and print students' info"){
+          cout << "\n\n\n------------------ COMPARE THE TWO TABLES BELOW, SHOULD BE THE SAME -------------------\n" << endl;
+          printAllStudents(studentData);
+          cout << "\t\t\t\t\t\t\t\t\t**** STUDENT LIST ****\n";
+          cout << left << setw(40) << "|Name" << setw(18) << "|USF ID" << setw(40) << "|Email" << setw(22) << "|Presentation Grade" << setw(22) << "|Essay Grade" << setw(22) << "|Project Grade" << endl;
+          cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------------\n";
+          //Print all students' information
+          for (unsigned int i = 0; i < studentData.size(); i++)
+          {
+              cout << " " << left << setw(40) << studentData[i].name << setw(18) << studentData[i].USF_ID << setw(40) << studentData[i].email << setw(22) <<
+                      (char)((studentData[i].presGrade == -1) ? '-' : studentData[i].presGrade+48) << setw(22) <<//modified: added cast to char
+                      (char)((studentData[i].essayGrade == -1) ? '-' : studentData[i].essayGrade+48) << setw(22) <<//modified: added cast to char
+                      (char)((studentData[i].projectGrade == -1) ? '-' : studentData[i].projectGrade+48) << endl;//modified: added cast to char
+          }
+          cout << endl;
+          cout << "---------------------------------------------------------------------------------------------\n\n"; 
+      }
+  }
+}
